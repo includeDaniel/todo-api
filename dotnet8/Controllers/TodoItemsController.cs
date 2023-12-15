@@ -56,6 +56,7 @@ public class TodoItemsController : ControllerBase
     }
 
     // GET: api/TodoItems
+    [Authorize(Policy = "Todo.GetAll")]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<TodoItemDTO>>> GetTodoItems()
     {
