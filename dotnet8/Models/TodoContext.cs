@@ -10,7 +10,7 @@ public class TodoContext : IdentityDbContext<IdentityUser>
         : base(options)
     {
     }
-    public DbSet<TodoItem> TodoItems { get; set; } = null!;
+    public DbSet<TodoItem> TodoItems { get; set; }
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

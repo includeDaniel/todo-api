@@ -1,11 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using TodoApi.Models;
 
 namespace TodoApi.Controllers;
@@ -20,39 +15,6 @@ public class TodoItemsController : ControllerBase
     public TodoItemsController(TodoContext context)
     {
         _context = context;
-    }
-
-    // GET: api/TodoItems/token
-    [AllowAnonymous]
-    [HttpGet("/token")]
-    public async Task<IActionResult> GenerateToken()
-    {
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.ASCII.GetBytes("345c5767-ab18-42f9-a986-862f2dca45c8");
-
-
-        var claims = new List<Claim>();
-
-        //claims.Add(new Claim(JwtRegisteredClaimNames.Name, user.UserName));
-        //claims.Add(new Claim(JwtRegisteredClaimNames.Sub, user.Id));
-        //claims.Add(new Claim(JwtRegisteredClaimNames.Email, user.Email));
-        claims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
-        claims.Add(new Claim(JwtRegisteredClaimNames.Nbf, ToUnixEpochDate(DateTime.UtcNow).ToString()));
-        claims.Add(new Claim(JwtRegisteredClaimNames.Iat, ToUnixEpochDate(DateTime.UtcNow).ToString(), ClaimValueTypes.Integer64));
-        
-        var identityClaims = new ClaimsIdentity();
-        identityClaims.AddClaims(claims);
-
-        var token = tokenHandler.CreateToken(new SecurityTokenDescriptor
-        {
-            Issuer = "todo-api",
-            Audience = "https://localhost:7047/",
-            Subject = identityClaims,
-            Expires = DateTime.UtcNow.AddHours(10),
-            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-        });
-
-        return Ok(new { token = tokenHandler.WriteToken(token) });
     }
 
     // GET: api/TodoItems
@@ -156,10 +118,6 @@ public class TodoItemsController : ControllerBase
     {
         return _context.TodoItems.Any(e => e.Id == id);
     }
-
-    private static long ToUnixEpochDate(DateTime date)
-          => (long)Math.Round((date.ToUniversalTime() - new DateTimeOffset(1970, 1, 1, 0, 0, 0, TimeSpan.Zero)).TotalSeconds);
-
 
     private static TodoItemDTO ItemToDTO(TodoItem todoItem) =>
        new TodoItemDTO
