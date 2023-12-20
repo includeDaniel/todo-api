@@ -57,6 +57,7 @@ namespace TodoApi.Controllers
             claims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
             claims.Add(new Claim(JwtRegisteredClaimNames.Nbf, ToUnixEpochDate(DateTime.UtcNow).ToString()));
             claims.Add(new Claim(JwtRegisteredClaimNames.Iat, ToUnixEpochDate(DateTime.UtcNow).ToString(), ClaimValueTypes.Integer64));
+            claims.Add(new Claim("Todo", "GetAll"));
 
             var identityClaims = new ClaimsIdentity();
             identityClaims.AddClaims(claims);
@@ -68,11 +69,11 @@ namespace TodoApi.Controllers
                 Subject = identityClaims,
                 Expires = DateTime.UtcNow.AddHours(10),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
+
             });
 
             return Ok(new { token = tokenHandler.WriteToken(token) });
         }
-
 
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterRequestModel model)
