@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TodoApi.Models;
@@ -20,10 +21,20 @@ public class TodoItemsController : ControllerBase
     // GET: api/TodoItems
     [Authorize(Policy = "Todo.GetAll")]
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<TodoItemDTO>>> GetTodoItems()
+    public async Task<ActionResult<IEnumerable<TodoItem>>> GetTodoItems()
     {
+        var claims = HttpContext.User.Claims;
+
+
+        var userId = claims.Where(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").FirstOrDefault();
+        if(userId == null)
+        {
+            return BadRequest();
+        }
+
         return await _context.TodoItems
-            .Select(x => ItemToDTO(x))
+            .Select(x => x)
+            .Where(x => x.UserId == userId.Value)
             .ToListAsync();
     }
 

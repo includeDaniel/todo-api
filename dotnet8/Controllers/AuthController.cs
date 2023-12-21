@@ -5,6 +5,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using TodoApi.Controllers.Models;
+using TodoApi.Models;
 
 
 namespace TodoApi.Controllers
@@ -13,13 +14,11 @@ namespace TodoApi.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly ILogger<AuthController> _logger;
-        private readonly SignInManager<IdentityUser> _signInManager;
-        public AuthController(UserManager<IdentityUser> userManager , ILogger<AuthController> logger, SignInManager<IdentityUser> signInManager)
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        public AuthController(UserManager<ApplicationUser> userManager , ILogger<AuthController> logger, SignInManager<ApplicationUser> signInManager)
         {
             _userManager = userManager;
-            _logger = logger;
             _signInManager = signInManager;
         }
 
@@ -50,9 +49,10 @@ namespace TodoApi.Controllers
 
 
             var claims = new List<Claim>();
+            var user = await _userManager.FindByNameAsync(model.UserName);
 
             //claims.Add(new Claim(JwtRegisteredClaimNames.Name, user.UserName));
-            //claims.Add(new Claim(JwtRegisteredClaimNames.Sub, user.Id));
+            claims.Add(new Claim(JwtRegisteredClaimNames.Sub, user.Id));
             //claims.Add(new Claim(JwtRegisteredClaimNames.Email, user.Email));
             claims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
             claims.Add(new Claim(JwtRegisteredClaimNames.Nbf, ToUnixEpochDate(DateTime.UtcNow).ToString()));
@@ -68,8 +68,7 @@ namespace TodoApi.Controllers
                 Audience = "https://localhost:7047/",
                 Subject = identityClaims,
                 Expires = DateTime.UtcNow.AddHours(10),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
-
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             });
 
             return Ok(new { token = tokenHandler.WriteToken(token) });
@@ -80,7 +79,8 @@ namespace TodoApi.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var user = new IdentityUser {
+            var user = new ApplicationUser
+            {
                 Email = model.Email,
                 UserName = model.UserName,
                 EmailConfirmed = true,
