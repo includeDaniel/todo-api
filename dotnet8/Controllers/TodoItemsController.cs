@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using TodoApi.Controllers.Models;
 using TodoApi.Models;
 
 namespace TodoApi.Controllers;
@@ -91,12 +92,21 @@ public class TodoItemsController : ControllerBase
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     // <snippet_Create>
     [HttpPost]
-    public async Task<ActionResult<TodoItemDTO>> PostTodoItem(TodoItemDTO todoDTO)
+    public async Task<ActionResult<TodoViewModel>> PostTodoItem(TodoViewModel todo)
     {
+
+        var claims = HttpContext.User.Claims;
+        var userId = claims.Where(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").FirstOrDefault();
+        
+        if (userId == null)
+        {
+            return BadRequest();
+        }
         var todoItem = new TodoItem
         {
-            IsComplete = todoDTO.IsComplete,
-            Name = todoDTO.Name
+            IsComplete = todo.IsComplete,
+            Name = todo.Name,
+            UserId = userId.Value 
         };
 
         _context.TodoItems.Add(todoItem);
