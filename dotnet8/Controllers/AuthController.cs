@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using System.Configuration;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -16,10 +18,13 @@ namespace TodoApi.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        public AuthController(UserManager<ApplicationUser> userManager , ILogger<AuthController> logger, SignInManager<ApplicationUser> signInManager)
+        private readonly IConfiguration Configuration;
+
+        public AuthController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IConfiguration configuration)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            Configuration = configuration;
         }
 
 
@@ -45,7 +50,8 @@ namespace TodoApi.Controllers
             }
 
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes("345c5767-ab18-42f9-a986-862f2dca45c8");
+
+            var key = Encoding.ASCII.GetBytes(Configuration["jwt:secretKey"]);
 
 
             var claims = new List<Claim>();
@@ -57,7 +63,7 @@ namespace TodoApi.Controllers
             claims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
             claims.Add(new Claim(JwtRegisteredClaimNames.Nbf, ToUnixEpochDate(DateTime.UtcNow).ToString()));
             claims.Add(new Claim(JwtRegisteredClaimNames.Iat, ToUnixEpochDate(DateTime.UtcNow).ToString(), ClaimValueTypes.Integer64));
-            claims.Add(new Claim("Todo", "GetAll"));
+            claims.Add(new Claim("Todo", "GetAll"));    
 
             var identityClaims = new ClaimsIdentity();
             identityClaims.AddClaims(claims);
