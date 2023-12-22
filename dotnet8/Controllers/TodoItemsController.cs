@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TodoApi.Controllers.Models;
@@ -21,7 +20,7 @@ public class TodoItemsController : ControllerBase
 
     // GET: api/TodoItems
     [Authorize(Policy = "Todo.GetAll")]
-    [HttpGet]
+    [HttpGet("All/{userId}")]
     public async Task<ActionResult<IEnumerable<TodoItem>>> All()
     {
         var claims = HttpContext.User.Claims;
@@ -41,7 +40,7 @@ public class TodoItemsController : ControllerBase
 
     // GET: api/TodoItems/5
     // <snippet_GetByID>
-    [HttpGet("{id}")]
+    [HttpGet("Show/{id}/{userId}")]
     public async Task<ActionResult<TodoItemDTO>> Show(long id)
     {
         var todoItem = await _context.TodoItems.FindAsync(id);
@@ -58,7 +57,7 @@ public class TodoItemsController : ControllerBase
     // PUT: api/TodoItems/5
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     // <snippet_Update>
-    [HttpPut("{id}")]
+    [HttpPut("Update/{id}/{userId}")]
     public async Task<IActionResult> Update(long id, TodoItemDTO todoDTO)
     {
         if (id != todoDTO.Id)
@@ -91,7 +90,7 @@ public class TodoItemsController : ControllerBase
     // POST: api/TodoItems
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     // <snippet_Create>
-    [HttpPost]
+    [HttpPost("Add/{userId}")]
     public async Task<ActionResult<TodoViewModel>> Add(TodoViewModel todo)
     {
 
@@ -120,7 +119,7 @@ public class TodoItemsController : ControllerBase
     // </snippet_Create>
 
     // DELETE: api/TodoItems/5
-    [HttpDelete("{id}")]
+    [HttpDelete("Delete/{id}/{userId}")]
     public async Task<IActionResult> Remove(long id)
     {
         var todoItem = await _context.TodoItems.FindAsync(id);
