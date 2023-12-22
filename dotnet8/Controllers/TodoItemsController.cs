@@ -22,7 +22,7 @@ public class TodoItemsController : ControllerBase
     // GET: api/TodoItems
     [Authorize(Policy = "Todo.GetAll")]
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<TodoItem>>> GetTodoItems()
+    public async Task<ActionResult<IEnumerable<TodoItem>>> All()
     {
         var claims = HttpContext.User.Claims;
 
@@ -42,7 +42,7 @@ public class TodoItemsController : ControllerBase
     // GET: api/TodoItems/5
     // <snippet_GetByID>
     [HttpGet("{id}")]
-    public async Task<ActionResult<TodoItemDTO>> GetTodoItem(long id)
+    public async Task<ActionResult<TodoItemDTO>> Show(long id)
     {
         var todoItem = await _context.TodoItems.FindAsync(id);
 
@@ -59,7 +59,7 @@ public class TodoItemsController : ControllerBase
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     // <snippet_Update>
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutTodoItem(long id, TodoItemDTO todoDTO)
+    public async Task<IActionResult> Update(long id, TodoItemDTO todoDTO)
     {
         if (id != todoDTO.Id)
         {
@@ -92,7 +92,7 @@ public class TodoItemsController : ControllerBase
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     // <snippet_Create>
     [HttpPost]
-    public async Task<ActionResult<TodoViewModel>> PostTodoItem(TodoViewModel todo)
+    public async Task<ActionResult<TodoViewModel>> Add(TodoViewModel todo)
     {
 
         var claims = HttpContext.User.Claims;
@@ -113,7 +113,7 @@ public class TodoItemsController : ControllerBase
         await _context.SaveChangesAsync();
 
         return CreatedAtAction(
-            nameof(GetTodoItem),
+            nameof(Show),
             new { id = todoItem.Id },
             ItemToDTO(todoItem));
     }
@@ -121,7 +121,7 @@ public class TodoItemsController : ControllerBase
 
     // DELETE: api/TodoItems/5
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteTodoItem(long id)
+    public async Task<IActionResult> Remove(long id)
     {
         var todoItem = await _context.TodoItems.FindAsync(id);
         if (todoItem == null)
