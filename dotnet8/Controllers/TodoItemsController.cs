@@ -20,7 +20,7 @@ public class TodoItemsController : ControllerBase
 
     // GET: api/TodoItems
     [Authorize(Policy = "Todo.GetAll")]
-    [HttpGet("All/{userId:guid}")]
+    [HttpGet("{userId:guid}")]
     public async Task<ActionResult<IEnumerable<TodoItem>>> All(Guid userId)
     {
         
@@ -32,7 +32,7 @@ public class TodoItemsController : ControllerBase
 
     // GET: api/TodoItems/5
     // <snippet_GetByID>
-    [HttpGet("Show/{id:long}/{userId:guid}")]
+    [HttpGet("{id:long}/{userId:guid}")]
     public async Task<ActionResult<TodoItemDTO>> Show(long id, Guid userId)
     {
         var todoItem = await _context.TodoItems.FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId.ToString());
@@ -49,10 +49,10 @@ public class TodoItemsController : ControllerBase
     // PUT: api/TodoItems/5
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     // <snippet_Update>
-    [HttpPut("Update/{id:long}/{userId:guid}")]
-    public async Task<IActionResult> Update(long id, TodoItemDTO todoDTO)
+    [HttpPut("{id:long}/{userId:guid}")]
+    public async Task<IActionResult> Update(long id, TodoItem todo, Guid userId)
     {
-        if (id != todoDTO.Id)
+        if (id != todo.Id && userId.ToString() != todo.UserId)
         {
             return BadRequest();
         }
@@ -63,8 +63,8 @@ public class TodoItemsController : ControllerBase
             return NotFound();
         }
 
-        todoItem.Name = todoDTO.Name;
-        todoItem.IsComplete = todoDTO.IsComplete;
+        todoItem.Name = todo.Name;
+        todoItem.IsComplete = todo.IsComplete;
 
         try
         {
@@ -82,22 +82,14 @@ public class TodoItemsController : ControllerBase
     // POST: api/TodoItems
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     // <snippet_Create>
-    [HttpPost("Add/{userId:guid}")]
-    public async Task<ActionResult<TodoViewModel>> Add(TodoViewModel todo)
+    [HttpPost("{userId:guid}")]
+    public async Task<ActionResult<TodoViewModel>> Add(Guid userId, TodoViewModel todo)
     {
-
-        var claims = HttpContext.User.Claims;
-        var userId = claims.Where(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").FirstOrDefault();
-        
-        if (userId == null)
-        {
-            return BadRequest();
-        }
         var todoItem = new TodoItem
         {
             IsComplete = todo.IsComplete,
             Name = todo.Name,
-            UserId = userId.Value 
+            UserId = userId.ToString() 
         };
 
         _context.TodoItems.Add(todoItem);
@@ -111,10 +103,14 @@ public class TodoItemsController : ControllerBase
     // </snippet_Create>
 
     // DELETE: api/TodoItems/5
-    [HttpDelete("Delete/{id:long}/{userId:guid}")]
-    public async Task<IActionResult> Remove(long id)
+    [HttpDelete("{id:long}/{userId:guid}")]
+    public async Task<IActionResult> Remove(long id, Guid userId)
     {
         var todoItem = await _context.TodoItems.FindAsync(id);
+        if(todoItem.UserId != userId.ToString()) 
+        {
+            return BadRequest();
+        }
         if (todoItem == null)
         {
             return NotFound();
