@@ -20,30 +20,22 @@ public class TodoItemsController : ControllerBase
 
     // GET: api/TodoItems
     [Authorize(Policy = "Todo.GetAll")]
-    [HttpGet("All/{userId}")]
-    public async Task<ActionResult<IEnumerable<TodoItem>>> All()
+    [HttpGet("All/{userId:guid}")]
+    public async Task<ActionResult<IEnumerable<TodoItem>>> All(Guid userId)
     {
-        var claims = HttpContext.User.Claims;
-
-
-        var userId = claims.Where(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").FirstOrDefault();
-        if(userId == null)
-        {
-            return BadRequest();
-        }
-
+        
         return await _context.TodoItems
             .Select(x => x)
-            .Where(x => x.UserId == userId.Value)
+            .Where(x => x.UserId == userId.ToString())
             .ToListAsync();
     }
 
     // GET: api/TodoItems/5
     // <snippet_GetByID>
-    [HttpGet("Show/{id}/{userId}")]
-    public async Task<ActionResult<TodoItemDTO>> Show(long id)
+    [HttpGet("Show/{id:long}/{userId:guid}")]
+    public async Task<ActionResult<TodoItemDTO>> Show(long id, Guid userId)
     {
-        var todoItem = await _context.TodoItems.FindAsync(id);
+        var todoItem = await _context.TodoItems.FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId.ToString());
 
         if (todoItem == null)
         {
@@ -57,7 +49,7 @@ public class TodoItemsController : ControllerBase
     // PUT: api/TodoItems/5
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     // <snippet_Update>
-    [HttpPut("Update/{id}/{userId}")]
+    [HttpPut("Update/{id:long}/{userId:guid}")]
     public async Task<IActionResult> Update(long id, TodoItemDTO todoDTO)
     {
         if (id != todoDTO.Id)
@@ -90,7 +82,7 @@ public class TodoItemsController : ControllerBase
     // POST: api/TodoItems
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     // <snippet_Create>
-    [HttpPost("Add/{userId}")]
+    [HttpPost("Add/{userId:guid}")]
     public async Task<ActionResult<TodoViewModel>> Add(TodoViewModel todo)
     {
 
@@ -119,7 +111,7 @@ public class TodoItemsController : ControllerBase
     // </snippet_Create>
 
     // DELETE: api/TodoItems/5
-    [HttpDelete("Delete/{id}/{userId}")]
+    [HttpDelete("Delete/{id:long}/{userId:guid}")]
     public async Task<IActionResult> Remove(long id)
     {
         var todoItem = await _context.TodoItems.FindAsync(id);
