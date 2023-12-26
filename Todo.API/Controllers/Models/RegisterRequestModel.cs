@@ -1,14 +1,16 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace TodoApi.Controllers.Models
+namespace Todo.API.Controllers.Models
 {
-    public class LoginRequestModel
+    public class RegisterRequestModel
     {
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; }
         [Required]
         public string UserName { get; set; }
         [Required]
         public string Password { get; set; }
-
-        public bool RememberMe { get; set; }
     }
+
 }

@@ -6,11 +6,11 @@ using System.Configuration;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using TodoApi.Controllers.Models;
+using Todo.API.Controllers.Models;
 using TodoApi.Models;
 
 
-namespace TodoApi.Controllers
+namespace Todo.API.Controllers
 {
     [Route("[controller]")]
     [ApiController]
@@ -63,7 +63,7 @@ namespace TodoApi.Controllers
             claims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
             claims.Add(new Claim(JwtRegisteredClaimNames.Nbf, ToUnixEpochDate(DateTime.UtcNow).ToString()));
             claims.Add(new Claim(JwtRegisteredClaimNames.Iat, ToUnixEpochDate(DateTime.UtcNow).ToString(), ClaimValueTypes.Integer64));
-            claims.Add(new Claim("Todo", "GetAll"));    
+            claims.Add(new Claim("Todo", "GetAll"));
 
             var identityClaims = new ClaimsIdentity();
             identityClaims.AddClaims(claims);
@@ -97,11 +97,11 @@ namespace TodoApi.Controllers
             var result = await _userManager.CreateAsync(user, model.Password);
 
 
-            if(!result.Succeeded)
+            if (!result.Succeeded)
             {
                 return BadRequest(result);
             }
-  
+
             return Ok(user);
         }
         private static long ToUnixEpochDate(DateTime date)

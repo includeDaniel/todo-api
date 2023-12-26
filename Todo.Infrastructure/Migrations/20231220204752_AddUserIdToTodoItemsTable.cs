@@ -1,8 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
-
-namespace TodoApi.Migrations
+namespace Todo.Infrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class AddUserIdToTodoItemsTable : Migration

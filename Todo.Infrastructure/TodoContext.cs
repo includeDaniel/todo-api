@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace TodoApi.Models;
+namespace Todo.Infrastructure;
 
 public class TodoContext : IdentityDbContext<ApplicationUser>
 {

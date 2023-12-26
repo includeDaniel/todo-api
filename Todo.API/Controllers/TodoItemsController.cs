@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using TodoApi.Controllers.Models;
+using Todo.API.Controllers.Models;
 using TodoApi.Models;
 
-namespace TodoApi.Controllers;
+namespace Todo.API.Controllers;
 
 [Route("api/TodoItemsController")]
 [ApiController]
@@ -23,7 +23,7 @@ public class TodoItemsController : ControllerBase
     [HttpGet("{userId:guid}")]
     public async Task<ActionResult<IEnumerable<TodoItem>>> All(Guid userId)
     {
-        
+
         return await _context.TodoItems
             .Select(x => x)
             .Where(x => x.UserId == userId.ToString())
@@ -89,7 +89,7 @@ public class TodoItemsController : ControllerBase
         {
             IsComplete = todo.IsComplete,
             Name = todo.Name,
-            UserId = userId.ToString() 
+            UserId = userId.ToString()
         };
 
         _context.TodoItems.Add(todoItem);
@@ -107,7 +107,7 @@ public class TodoItemsController : ControllerBase
     public async Task<IActionResult> Remove(long id, Guid userId)
     {
         var todoItem = await _context.TodoItems.FindAsync(id);
-        if(todoItem.UserId != userId.ToString()) 
+        if (todoItem.UserId != userId.ToString())
         {
             return BadRequest();
         }

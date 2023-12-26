@@ -1,4 +1,4 @@
-﻿namespace TodoApi.Controllers.Models
+﻿namespace Todo.API.Controllers.Models
 {
     public class TodoViewModel
     {
