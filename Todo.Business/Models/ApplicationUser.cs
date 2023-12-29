@@ -4,6 +4,6 @@ namespace Todo.Business.Models
 {
     public class ApplicationUser : IdentityUser
     {
-        public IEnumerable<TodoItem>? TodoItems { get; set; }
+        public IEnumerable<TodoModel>? Todos { get; set; }
     }
 }

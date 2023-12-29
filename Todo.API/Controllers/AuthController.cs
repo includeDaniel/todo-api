@@ -7,7 +7,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Todo.API.Controllers.Models;
-using TodoApi.Models;
+using Todo.Business.Models;
 
 
 namespace Todo.API.Controllers

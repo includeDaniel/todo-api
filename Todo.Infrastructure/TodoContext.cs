@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Todo.Business.Models;
 
 namespace Todo.Infrastructure;
 
@@ -10,13 +10,13 @@ public class TodoContext : IdentityDbContext<ApplicationUser>
         : base(options)
     {
     }
-    public DbSet<TodoItem> TodoItems { get; set; }
+    public DbSet<TodoModel> Todos { get; set; }
     protected override void OnModelCreating(ModelBuilder builder)
     {
         builder.Entity<ApplicationUser>()
-            .HasMany(t => t.TodoItems)
-            .WithOne(a => a.ApplicationUser)
-            .HasForeignKey(a => a.UserId);
+        .HasMany(t => t.Todos)
+        .WithOne(a => a.ApplicationUser)
+        .HasForeignKey(a => a.UserId);
 
         base.OnModelCreating(builder);
         // Customize the ASP.NET Identity model and override the defaults if needed.

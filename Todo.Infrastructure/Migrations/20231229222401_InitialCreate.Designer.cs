@@ -7,14 +7,13 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Todo.Infrastructure;
 
-
 #nullable disable
 
-namespace TodoApi.Migrations
+namespace Todo.Infrastructure.Migrations
 {
     [DbContext(typeof(TodoContext))]
-    [Migration("20231220204752_AddUserIdToTodoItemsTable")]
-    partial class AddUserIdToTodoItemsTable
+    [Migration("20231229222401_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -162,7 +161,7 @@ namespace TodoApi.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("TodoApi.Models.ApplicationUser", b =>
+            modelBuilder.Entity("Todo.Business.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -226,21 +225,16 @@ namespace TodoApi.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("TodoApi.Models.TodoItem", b =>
+            modelBuilder.Entity("Todo.Business.Models.TodoModel", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<bool>("IsComplete")
                         .HasColumnType("boolean");
 
                     b.Property<string>("Name")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Secret")
                         .HasColumnType("text");
 
                     b.Property<string>("UserId")
@@ -251,7 +245,7 @@ namespace TodoApi.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("TodoItems");
+                    b.ToTable("Todos");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -265,7 +259,7 @@ namespace TodoApi.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("TodoApi.Models.ApplicationUser", null)
+                    b.HasOne("Todo.Business.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -274,7 +268,7 @@ namespace TodoApi.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("TodoApi.Models.ApplicationUser", null)
+                    b.HasOne("Todo.Business.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -289,7 +283,7 @@ namespace TodoApi.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TodoApi.Models.ApplicationUser", null)
+                    b.HasOne("Todo.Business.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -298,17 +292,17 @@ namespace TodoApi.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("TodoApi.Models.ApplicationUser", null)
+                    b.HasOne("Todo.Business.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("TodoApi.Models.TodoItem", b =>
+            modelBuilder.Entity("Todo.Business.Models.TodoModel", b =>
                 {
-                    b.HasOne("TodoApi.Models.ApplicationUser", "ApplicationUser")
-                        .WithMany("TodoItems")
+                    b.HasOne("Todo.Business.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany("Todos")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -316,9 +310,9 @@ namespace TodoApi.Migrations
                     b.Navigation("ApplicationUser");
                 });
 
-            modelBuilder.Entity("TodoApi.Models.ApplicationUser", b =>
+            modelBuilder.Entity("Todo.Business.Models.ApplicationUser", b =>
                 {
-                    b.Navigation("TodoItems");
+                    b.Navigation("Todos");
                 });
 #pragma warning restore 612, 618
         }

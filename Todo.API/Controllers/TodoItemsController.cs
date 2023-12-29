@@ -2,7 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Todo.API.Controllers.Models;
-using TodoApi.Models;
+using Todo.Business.Interfaces;
+using Todo.Business.Models;
+using Todo.Infrastructure;
+using Todo.Infrastructure.Repository;
 
 namespace Todo.API.Controllers;
 
@@ -12,52 +15,51 @@ namespace Todo.API.Controllers;
 public class TodoItemsController : ControllerBase
 {
     private readonly TodoContext _context;
+    private readonly ITodoRepository _todoRepository;
 
-    public TodoItemsController(TodoContext context)
+    public TodoItemsController(TodoContext context, ITodoRepository todoRepository)
     {
         _context = context;
+        _todoRepository = todoRepository;
     }
 
     // GET: api/TodoItems
     [Authorize(Policy = "Todo.GetAll")]
     [HttpGet("{userId:guid}")]
-    public async Task<ActionResult<IEnumerable<TodoItem>>> All(Guid userId)
+    public async Task<ActionResult<IEnumerable<TodoModel>>> All(Guid userId)
     {
 
-        return await _context.TodoItems
-            .Select(x => x)
-            .Where(x => x.UserId == userId.ToString())
-            .ToListAsync();
+        return Ok(await _todoRepository.GetAllTodos(userId.ToString())); 
     }
 
     // GET: api/TodoItems/5
     // <snippet_GetByID>
-    [HttpGet("{id:long}/{userId:guid}")]
-    public async Task<ActionResult<TodoItemDTO>> Show(long id, Guid userId)
+    [HttpGet("{id:guid}/{userId:guid}")]
+    public async Task<ActionResult<TodoModel>> Show(Guid id, Guid userId)
     {
-        var todoItem = await _context.TodoItems.FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId.ToString());
+        var todoItem = await _context.Todos.FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId.ToString());
 
         if (todoItem == null)
         {
             return NotFound();
         }
 
-        return ItemToDTO(todoItem);
+        return todoItem;
     }
     // </snippet_GetByID>
 
     // PUT: api/TodoItems/5
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     // <snippet_Update>
-    [HttpPut("{id:long}/{userId:guid}")]
-    public async Task<IActionResult> Update(long id, TodoItem todo, Guid userId)
+    [HttpPut("{id:guid}/{userId:guid}")]
+    public async Task<IActionResult> Update(Guid id, TodoModel todo, Guid userId)
     {
         if (id != todo.Id && userId.ToString() != todo.UserId)
         {
             return BadRequest();
         }
 
-        var todoItem = await _context.TodoItems.FindAsync(id);
+        var todoItem = await _context.Todos.FindAsync(id);
         if (todoItem == null)
         {
             return NotFound();
@@ -85,28 +87,28 @@ public class TodoItemsController : ControllerBase
     [HttpPost("{userId:guid}")]
     public async Task<ActionResult<TodoViewModel>> Add(Guid userId, TodoViewModel todo)
     {
-        var todoItem = new TodoItem
+        var todoItem = new TodoModel
         {
             IsComplete = todo.IsComplete,
             Name = todo.Name,
             UserId = userId.ToString()
         };
 
-        _context.TodoItems.Add(todoItem);
+        _context.Todos.Add(todoItem);
         await _context.SaveChangesAsync();
 
         return CreatedAtAction(
             nameof(Show),
             new { id = todoItem.Id },
-            ItemToDTO(todoItem));
+            todoItem);
     }
     // </snippet_Create>
 
     // DELETE: api/TodoItems/5
-    [HttpDelete("{id:long}/{userId:guid}")]
-    public async Task<IActionResult> Remove(long id, Guid userId)
+    [HttpDelete("{id:guid}/{userId:guid}")]
+    public async Task<IActionResult> Remove(Guid id, Guid userId)
     {
-        var todoItem = await _context.TodoItems.FindAsync(id);
+        var todoItem = await _context.Todos.FindAsync(id);
         if (todoItem.UserId != userId.ToString())
         {
             return BadRequest();
@@ -116,22 +118,14 @@ public class TodoItemsController : ControllerBase
             return NotFound();
         }
 
-        _context.TodoItems.Remove(todoItem);
+        _context.Todos.Remove(todoItem);
         await _context.SaveChangesAsync();
 
         return NoContent();
     }
 
-    private bool TodoItemExists(long id)
+    private bool TodoItemExists(Guid id)
     {
-        return _context.TodoItems.Any(e => e.Id == id);
+        return _context.Todos.Any(e => e.Id == id);
     }
-
-    private static TodoItemDTO ItemToDTO(TodoItem todoItem) =>
-       new TodoItemDTO
-       {
-           Id = todoItem.Id,
-           Name = todoItem.Name,
-           IsComplete = todoItem.IsComplete
-       };
 }

@@ -3,8 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
-using TodoApi.Models;
-using Microsoft.AspNetCore.Identity;
+using Todo.Infrastructure;
+using Todo.Business.Models;
+using ApiRestful.Api.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -83,6 +84,8 @@ builder.Services.AddSwaggerGen(c =>
                     }
                 });
 });
+
+builder.Services.ResolveDependencies();
 
 var app = builder.Build();
 
