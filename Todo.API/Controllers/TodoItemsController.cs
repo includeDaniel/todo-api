@@ -37,14 +37,14 @@ public class TodoItemsController : ControllerBase
     [HttpGet("{id:guid}/{userId:guid}")]
     public async Task<ActionResult<TodoModel>> Show(Guid id, Guid userId)
     {
-        var todoItem = await _context.Todos.FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId.ToString());
+        var todoItem = await _todoRepository.GetOneSpecificTodo(userId.ToString(), id);
 
         if (todoItem == null)
         {
             return NotFound();
         }
 
-        return todoItem;
+        return Ok(todoItem);
     }
     // </snippet_GetByID>
 
