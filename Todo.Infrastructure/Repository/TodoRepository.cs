@@ -17,12 +17,11 @@ namespace Todo.Infrastructure.Repository
                 .Where(u => u.UserId == userId)
                 .ToListAsync();
         }
-        public async Task<IEnumerable<TodoModel>> GetOneSpecificTodo(string userId, Guid Id)
+        public async Task<TodoModel> GetTodo(string userId, Guid Id)
         {
             return await Db.Todos
-                .AsNoTracking()
-                .Where(u => u.UserId == userId && u.Id == Id)
-                .ToListAsync();
+             .AsNoTracking()
+             .FirstOrDefaultAsync(u => u.UserId == userId && u.Id == Id);
         }
     }
 }

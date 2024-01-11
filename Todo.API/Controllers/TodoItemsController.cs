@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Todo.API.Controllers.Models;
 using Todo.Business.Interfaces;
+using Todo.Business.Interfaces.Services;
 using Todo.Business.Models;
 using Todo.Infrastructure;
 using Todo.Infrastructure.Repository;
@@ -15,12 +16,12 @@ namespace Todo.API.Controllers;
 public class TodoItemsController : ControllerBase
 {
     private readonly TodoContext _context;
-    private readonly ITodoRepository _todoRepository;
+    private readonly ITodoService _todoService;
 
-    public TodoItemsController(TodoContext context, ITodoRepository todoRepository)
+    public TodoItemsController(TodoContext context, ITodoService todoService)
     {
         _context = context;
-        _todoRepository = todoRepository;
+        _todoService = todoService;
     }
 
     // GET: api/TodoItems
@@ -28,8 +29,7 @@ public class TodoItemsController : ControllerBase
     [HttpGet("{userId:guid}")]
     public async Task<ActionResult<IEnumerable<TodoModel>>> All(Guid userId)
     {
-
-        return Ok(await _todoRepository.GetAllTodos(userId.ToString())); 
+        return Ok(await _todoService.All(userId.ToString())); 
     }
 
     // GET: api/TodoItems/5
@@ -37,7 +37,7 @@ public class TodoItemsController : ControllerBase
     [HttpGet("{id:guid}/{userId:guid}")]
     public async Task<ActionResult<TodoModel>> Show(Guid id, Guid userId)
     {
-        var todoItem = await _todoRepository.GetOneSpecificTodo(userId.ToString(), id);
+        var todoItem = await _todoService.Show(userId.ToString(), id);
 
         if (todoItem == null)
         {

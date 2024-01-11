@@ -1,5 +1,7 @@
 ﻿
 using Todo.Business.Interfaces;
+using Todo.Business.Interfaces.Services;
+using Todo.Business.Services;
 using Todo.Infrastructure;
 using Todo.Infrastructure.Repository;
 
@@ -18,6 +20,10 @@ namespace ApiRestful.Api.Configuration
             // repository
 
             services.AddScoped<ITodoRepository, TodoRepository>();
+
+            //service
+
+            services.AddScoped<ITodoService, TodoService>();
 
             return services;
         }
