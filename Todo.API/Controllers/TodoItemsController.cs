@@ -2,11 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Todo.API.Controllers.Models;
-using Todo.Business.Interfaces;
 using Todo.Business.Interfaces.Services;
 using Todo.Business.Models;
 using Todo.Infrastructure;
-using Todo.Infrastructure.Repository;
 
 namespace Todo.API.Controllers;
 
@@ -84,23 +82,20 @@ public class TodoItemsController : ControllerBase
     // POST: api/TodoItems
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     // <snippet_Create>
-    [HttpPost("{userId:guid}")]
-    public async Task<ActionResult<TodoViewModel>> Add(Guid userId, TodoViewModel todo)
+    [HttpPost]
+    public async Task<ActionResult<TodoViewModel>> Add(TodoViewModel todo)
     {
         var todoItem = new TodoModel
         {
             IsComplete = todo.IsComplete,
             Name = todo.Name,
-            UserId = userId.ToString()
+            UserId = todo.UserId
         };
 
-        _context.Todos.Add(todoItem);
-        await _context.SaveChangesAsync();
 
-        return CreatedAtAction(
-            nameof(Show),
-            new { id = todoItem.Id },
-            todoItem);
+        await _todoService.Add(todoItem);   
+
+        return Ok(todo);
     }
     // </snippet_Create>
 

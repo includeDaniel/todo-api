@@ -14,9 +14,10 @@ namespace Todo.Business.Services
             _todoRepository = todoRepository;
         }
 
-        public Task<bool> Add(string userId, TodoModel project)
+        public async Task<bool> Add(TodoModel todo)
         {
-            throw new NotImplementedException();
+           await _todoRepository.Add(todo);
+           return true;
         }
 
         public async Task<IEnumerable<TodoModel>> All(string userId) => await _todoRepository.GetAllTodos(userId.ToString()); 

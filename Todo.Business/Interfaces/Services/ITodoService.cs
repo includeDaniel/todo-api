@@ -6,7 +6,7 @@ namespace Todo.Business.Interfaces.Services
     {
         Task<IEnumerable<TodoModel>> All(string userId);
         Task<TodoModel> Show(string userId, Guid id);
-        Task<bool> Add(string userId, TodoModel project);
+        Task<bool> Add(TodoModel todo);
         Task<bool> Update(string userId, TodoModel project);
         Task<bool> Remove(string userId,Guid id);
     }

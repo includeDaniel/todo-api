@@ -6,6 +6,6 @@ namespace Todo.Business.Interfaces
     {
         Task<IEnumerable<TodoModel>> GetAllTodos(string userId);
         Task<TodoModel> GetTodo(string userId, Guid Id);
-
+        
     }
 }
