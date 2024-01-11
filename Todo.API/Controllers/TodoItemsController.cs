@@ -27,7 +27,7 @@ public class TodoItemsController : ControllerBase
     [HttpGet("{userId:guid}")]
     public async Task<ActionResult<IEnumerable<TodoModel>>> All(Guid userId)
     {
-        return Ok(await _todoService.All(userId.ToString())); 
+        return Ok(await _todoService.All(userId.ToString()));
     }
 
     // GET: api/TodoItems/5
@@ -93,30 +93,19 @@ public class TodoItemsController : ControllerBase
         };
 
 
-        await _todoService.Add(todoItem);   
+        await _todoService.Add(todoItem);
 
         return Ok(todo);
     }
     // </snippet_Create>
 
     // DELETE: api/TodoItems/5
-    [HttpDelete("{id:guid}/{userId:guid}")]
-    public async Task<IActionResult> Remove(Guid id, Guid userId)
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Remove(Guid id)
     {
-        var todoItem = await _context.Todos.FindAsync(id);
-        if (todoItem.UserId != userId.ToString())
-        {
-            return BadRequest();
-        }
-        if (todoItem == null)
-        {
-            return NotFound();
-        }
 
-        _context.Todos.Remove(todoItem);
-        await _context.SaveChangesAsync();
-
-        return NoContent();
+        await _todoService.Remove(id);
+        return Ok("Task with id: " + id + " removed with success");
     }
 
     private bool TodoItemExists(Guid id)

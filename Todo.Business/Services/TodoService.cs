@@ -22,9 +22,16 @@ namespace Todo.Business.Services
 
         public async Task<IEnumerable<TodoModel>> All(string userId) => await _todoRepository.GetAllTodos(userId.ToString()); 
 
-        public Task<bool> Remove(string userId, Guid id)
+        public async Task<bool> Remove(Guid id)
         {
-            throw new NotImplementedException();
+
+            //var todoItem = await _todoRepository.GetById(id);
+            //if (todoItem == null)
+            //{
+            //    return NotFound();
+            //}
+            await _todoRepository.Remove(id);
+            return true;
         }
 
         public async Task<TodoModel> Show(string userId, Guid id) => await _todoRepository.GetTodo(userId.ToString(), id);
