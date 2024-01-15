@@ -11,7 +11,7 @@ namespace Todo.API.Controllers;
 [Route("api/TodoItemsController")]
 [ApiController]
 [Authorize]
-public class TodoItemsController : ControllerBase
+public class TodoItemsController : MainController
 {
     private readonly ITodoService _todoService;
 
