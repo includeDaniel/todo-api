@@ -36,9 +36,28 @@ namespace Todo.Business.Services
 
         public async Task<TodoModel> Show(string userId, Guid id) => await _todoRepository.GetTodo(userId.ToString(), id);
 
-        public Task<bool> Update(string userId, TodoModel project)  
+        public async Task<bool> Update(Guid id, TodoModel todo)  
         {
-            throw new NotImplementedException();
+        
+            //var todoItem = await _todoRepository.GetById(id);
+            //if (todoItem == null)
+            //{2
+            //    return NotFound();
+            //}
+
+            //todoItem.Name = todo.Name;
+            //todoItem.IsComplete = todo.IsComplete;
+
+            //try
+            //{
+                await _todoRepository.Update(todo);
+            //}
+            //catch (DbUpdateConcurrencyException) when (!TodoItemExists(id))
+            //{
+            //    return NotFound();
+            //}
+            return true;
+
         }
         public void Dispose()
         {

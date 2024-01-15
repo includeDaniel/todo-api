@@ -13,12 +13,10 @@ namespace Todo.API.Controllers;
 [Authorize]
 public class TodoItemsController : ControllerBase
 {
-    private readonly TodoContext _context;
     private readonly ITodoService _todoService;
 
-    public TodoItemsController(TodoContext context, ITodoService todoService)
+    public TodoItemsController(ITodoService todoService)
     {
-        _context = context;
         _todoService = todoService;
     }
 
@@ -49,33 +47,23 @@ public class TodoItemsController : ControllerBase
     // PUT: api/TodoItems/5
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     // <snippet_Update>
-    [HttpPut("{id:guid}/{userId:guid}")]
-    public async Task<IActionResult> Update(Guid id, TodoModel todo, Guid userId)
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> Update(Guid id, TodoViewModel todo)
     {
-        if (id != todo.Id && userId.ToString() != todo.UserId)
+        var todoItem = new TodoModel
         {
-            return BadRequest();
-        }
+            IsComplete = todo.IsComplete,
+            Name = todo.Name,
+            UserId = todo.UserId
+        };
 
-        var todoItem = await _context.Todos.FindAsync(id);
-        if (todoItem == null)
-        {
-            return NotFound();
-        }
+        todoItem.Id = new Guid(todo.Id);
 
-        todoItem.Name = todo.Name;
-        todoItem.IsComplete = todo.IsComplete;
 
-        try
-        {
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException) when (!TodoItemExists(id))
-        {
-            return NotFound();
-        }
+        await _todoService.Update( id, todoItem);
 
-        return NoContent();
+
+        return Ok();
     }
     // </snippet_Update>
 
@@ -108,8 +96,5 @@ public class TodoItemsController : ControllerBase
         return Ok("Task with id: " + id + " removed with success");
     }
 
-    private bool TodoItemExists(Guid id)
-    {
-        return _context.Todos.Any(e => e.Id == id);
-    }
+
 }
