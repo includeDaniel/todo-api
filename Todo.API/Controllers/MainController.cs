@@ -20,14 +20,14 @@ public class MainController : ControllerBase
 
         }
 
-        protected ActionResult HandleResponse(TooManyModelErrorsException Errors)
+        protected ActionResult HandleResponse()
         {
-            if(_notify == null)
+            if(_notify.GetAllNotifications() == null)
             {
                 return Ok();
             } else
             {
-                return BadRequest(Errors);
+                return BadRequest();
             }
         }
 

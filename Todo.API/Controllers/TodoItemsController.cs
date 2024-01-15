@@ -19,6 +19,7 @@ public class TodoItemsController : MainController
     public TodoItemsController(ITodoService todoService, INotify notifier) : base(notifier)
     {
         _todoService = todoService;
+        HandleResponse();
     }
 
     // GET: api/TodoItems

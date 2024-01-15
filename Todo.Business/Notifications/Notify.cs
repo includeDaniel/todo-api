@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Todo.Business.Notifications
+﻿namespace Todo.Business.Notifications
 {
     public class Notify
     {
