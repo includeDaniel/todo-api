@@ -7,6 +7,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Todo.API.Controllers.Models;
+using Todo.Business.Interfaces;
 using Todo.Business.Models;
 
 
@@ -20,7 +21,7 @@ namespace Todo.API.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IConfiguration Configuration;
 
-        public AuthController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IConfiguration configuration)
+        public AuthController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IConfiguration configuration, INotify notifier) : base(notifier)
         {
             _userManager = userManager;
             _signInManager = signInManager;

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Todo.Business.Interfaces;
+using Todo.Business.Models;
 using Todo.Business.Notifications;
 
 namespace Todo.API.Controllers
@@ -16,8 +17,19 @@ public class MainController : ControllerBase
         public MainController(INotify notify)
         {
             _notify = notify;
+
         }
 
+        protected ActionResult HandleResponse(TooManyModelErrorsException Errors)
+        {
+            if(_notify == null)
+            {
+                return Ok();
+            } else
+            {
+                return BadRequest(Errors);
+            }
+        }
 
         protected ActionResult FormattedResponse(Object result = null)
         {

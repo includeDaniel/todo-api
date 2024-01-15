@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Todo.API.Controllers.Models;
+using Todo.Business.Interfaces;
 using Todo.Business.Interfaces.Services;
 using Todo.Business.Models;
 using Todo.Infrastructure;
@@ -15,7 +16,7 @@ public class TodoItemsController : MainController
 {
     private readonly ITodoService _todoService;
 
-    public TodoItemsController(ITodoService todoService)
+    public TodoItemsController(ITodoService todoService, INotify notifier) : base(notifier)
     {
         _todoService = todoService;
     }
