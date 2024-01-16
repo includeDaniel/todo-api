@@ -10,28 +10,12 @@ public class MainController : ControllerBase
     {
         private readonly INotify _notify;
 
-        protected Guid UsuarioId { get; set; }
-
-        protected bool UsuarioAutenticado { get; set; }
-
         public MainController(INotify notify)
         {
             _notify = notify;
 
         }
-
-        protected ActionResult HandleResponse()
-        {
-            if(_notify.GetAllNotifications() == null)
-            {
-                return Ok();
-            } else
-            {
-                return BadRequest();
-            }
-        }
-
-        protected ActionResult FormattedResponse(Object result = null)
+        protected ActionResult HandleResponse(Object result = null)
         {
             if (HasNoErros())
             { 
@@ -50,13 +34,11 @@ public class MainController : ControllerBase
 
 
         }
-
-
         protected ActionResult FormattedResponse(ModelStateDictionary modelState)
         {
             if (!modelState.IsValid) NotifyInvalidModelState(modelState);
 
-            return FormattedResponse();
+            return HandleResponse();
         }
 
         protected void NotifyInvalidModelState(ModelStateDictionary modelState)

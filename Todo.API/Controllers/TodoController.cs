@@ -12,14 +12,13 @@ namespace Todo.API.Controllers;
 [Route("api/TodoItemsController")]
 [ApiController]
 [Authorize]
-public class TodoItemsController : MainController
+public class TodoController : MainController
 {
     private readonly ITodoService _todoService;
 
-    public TodoItemsController(ITodoService todoService, INotify notifier) : base(notifier)
+    public TodoController(ITodoService todoService, INotify notifier) : base(notifier)
     {
         _todoService = todoService;
-        HandleResponse();
     }
 
     // GET: api/TodoItems

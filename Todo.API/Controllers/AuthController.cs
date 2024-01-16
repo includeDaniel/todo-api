@@ -26,7 +26,6 @@ namespace Todo.API.Controllers
             _userManager = userManager;
             _signInManager = signInManager;
             Configuration = configuration;
-            HandleResponse();
         }
 
 

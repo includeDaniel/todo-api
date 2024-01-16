@@ -9,7 +9,7 @@ namespace Todo.Business.Services
 
         private readonly ITodoRepository _todoRepository;
 
-        public TodoService(ITodoRepository todoRepository)
+        public TodoService(ITodoRepository todoRepository, INotify notify) : base(notify)
         {
             _todoRepository = todoRepository;
         }
