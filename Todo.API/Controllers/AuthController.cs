@@ -32,7 +32,7 @@ namespace Todo.API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginRequestModel model)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (!ModelState.IsValid) return HandleResponse(ModelState);
             var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, false);
             if (!result.Succeeded)
             {
@@ -47,7 +47,7 @@ namespace Todo.API.Controllers
                     ModelState.AddModelError("Error", "You are lock out");
                 }
 
-                return BadRequest(ModelState);
+                return HandleResponse(ModelState);
             }
 
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -78,13 +78,13 @@ namespace Todo.API.Controllers
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             });
 
-            return Ok(new { token = tokenHandler.WriteToken(token) });
+            return HandleResponse(new { token = tokenHandler.WriteToken(token) });
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterRequestModel model)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (!ModelState.IsValid) return HandleResponse(ModelState);
 
             var user = new ApplicationUser
             {
@@ -100,10 +100,10 @@ namespace Todo.API.Controllers
 
             if (!result.Succeeded)
             {
-                return BadRequest(result);
+                return HandleResponse(result);
             }
 
-            return Ok(user);
+            return HandleResponse(user);
         }
         private static long ToUnixEpochDate(DateTime date)
                  => (long)Math.Round((date.ToUniversalTime() - new DateTimeOffset(1970, 1, 1, 0, 0, 0, TimeSpan.Zero)).TotalSeconds);

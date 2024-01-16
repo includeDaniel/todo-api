@@ -26,7 +26,7 @@ public class TodoController : MainController
     [HttpGet("{userId:guid}")]
     public async Task<ActionResult<IEnumerable<TodoModel>>> All(Guid userId)
     {
-        return Ok(await _todoService.All(userId.ToString()));
+        return HandleResponse(await _todoService.All(userId.ToString()));
     }
 
     // GET: api/TodoItems/5
@@ -38,10 +38,10 @@ public class TodoController : MainController
 
         if (todoItem == null)
         {
-            return NotFound();
+            return HandleResponse();
         }
 
-        return Ok(todoItem);
+        return HandleResponse(todoItem);
     }
     // </snippet_GetByID>
 
@@ -64,7 +64,7 @@ public class TodoController : MainController
         await _todoService.Update( id, todoItem);
 
 
-        return Ok();
+        return HandleResponse();
     }
     // </snippet_Update>
 
@@ -84,7 +84,7 @@ public class TodoController : MainController
 
         await _todoService.Add(todoItem);
 
-        return Ok(todo);
+        return HandleResponse(todo);
     }
     // </snippet_Create>
 
@@ -94,7 +94,7 @@ public class TodoController : MainController
     {
 
         await _todoService.Remove(id);
-        return Ok("Task with id: " + id + " removed with success");
+        return HandleResponse("Task with id: " + id + " removed with success");
     }
 
 

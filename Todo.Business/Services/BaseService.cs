@@ -11,7 +11,7 @@ namespace Todo.Business.Services
         private readonly INotify _notify;
 
         protected BaseService(INotify notify)
-        {
+        {   
             _notify = notify;
         }
 
