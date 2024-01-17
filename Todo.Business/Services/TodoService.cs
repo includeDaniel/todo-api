@@ -1,6 +1,7 @@
 ﻿using Todo.Business.Interfaces;
 using Todo.Business.Interfaces.Services;
 using Todo.Business.Models;
+using Todo.Business.Models.Validations;
 
 namespace Todo.Business.Services
 {
@@ -16,6 +17,21 @@ namespace Todo.Business.Services
 
         public async Task<bool> Add(TodoModel todo)
         {
+
+            if (!ExecuteValidation(new TodoValidation(), todo)) return false;
+
+            if (_todoRepository.Find(t => t.Name == todo.Name).Result.Any())
+            {
+                Notify("Todo with this name already exists");
+                return false;
+            }
+
+            //if (DateTime.Compare(project.FinalDate, project.InitialDate) <= 0)
+            //{
+            //    Notify("A data final deve ser maior que a data inicial");
+            //    return false;
+            //}
+
            await _todoRepository.Add(todo);
            return true;
         }
@@ -24,12 +40,6 @@ namespace Todo.Business.Services
 
         public async Task<bool> Remove(Guid id)
         {
-
-            //var todoItem = await _todoRepository.GetById(id);
-            //if (todoItem == null)
-            //{
-            //    return NotFound();
-            //}
             await _todoRepository.Remove(id);
             return true;
         }
@@ -38,24 +48,22 @@ namespace Todo.Business.Services
 
         public async Task<bool> Update(Guid id, TodoModel todo)  
         {
-        
-            //var todoItem = await _todoRepository.GetById(id);
-            //if (todoItem == null)
-            //{2
-            //    return NotFound();
+
+            if (!ExecuteValidation(new TodoValidation(), todo)) return false;
+
+            if (_todoRepository.Find(p => p.Name == todo.Name && p.Id != todo.Id).Result.Any())
+            {
+                Notify("Todo with this name already exists");
+                return false;
+            }
+
+            //if (DateTime.Compare(project.FinalDate, project.InitialDate) <= 0)
+            //{
+            //    Notify("A data final deve ser maior que a data inicial");
+            //    return false;
             //}
 
-            //todoItem.Name = todo.Name;
-            //todoItem.IsComplete = todo.IsComplete;
-
-            //try
-            //{
-                await _todoRepository.Update(todo);
-            //}
-            //catch (DbUpdateConcurrencyException) when (!TodoItemExists(id))
-            //{
-            //    return NotFound();
-            //}
+            await _todoRepository.Update(todo);
             return true;
 
         }

@@ -51,7 +51,7 @@ public class TodoController : MainController
     {
         var todoItem = new TodoModel
         {
-            IsComplete = todo.IsComplete,
+            IsComplete = todo.IsCompleted,
             Name = todo.Name,
             UserId = todo.UserId
         };
@@ -80,7 +80,7 @@ public class TodoController : MainController
 
         var todoItem = new TodoModel
         {
-            IsComplete = todo.IsComplete,
+            IsComplete = false,
             Name = todo.Name,
             UserId = todo.UserId
         };
