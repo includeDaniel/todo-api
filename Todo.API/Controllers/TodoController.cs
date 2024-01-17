@@ -1,11 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Todo.API.Controllers.Models;
 using Todo.Business.Interfaces;
 using Todo.Business.Interfaces.Services;
 using Todo.Business.Models;
-using Todo.Infrastructure;
 
 namespace Todo.API.Controllers;
 
@@ -34,14 +32,14 @@ public class TodoController : MainController
     [HttpGet("{id:guid}/{userId:guid}")]
     public async Task<ActionResult<TodoModel>> Show(Guid id, Guid userId)
     {
-        var todoItem = await _todoService.Show(userId.ToString(), id);
+        var todo = await _todoService.Show(userId.ToString(), id);
 
-        if (todoItem == null)
+        if (todo == null)
         {
-            return HandleResponse();
+            return NotFound();
         }
 
-        return HandleResponse(todoItem);
+        return HandleResponse(todo);
     }
     // </snippet_GetByID>
 
@@ -74,6 +72,12 @@ public class TodoController : MainController
     [HttpPost]
     public async Task<ActionResult<TodoViewModel>> Add(TodoViewModel todo)
     {
+        if (!ModelState.IsValid)
+        {
+            NotifyError("ModelState is invalid");
+            return HandleResponse();
+        }
+
         var todoItem = new TodoModel
         {
             IsComplete = todo.IsComplete,
@@ -81,9 +85,8 @@ public class TodoController : MainController
             UserId = todo.UserId
         };
 
-
+        
         await _todoService.Add(todoItem);
-
         return HandleResponse(todo);
     }
     // </snippet_Create>
