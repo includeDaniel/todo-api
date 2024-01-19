@@ -5,7 +5,7 @@ namespace Todo.Business.Interfaces
     public interface ITodoRepository : IRepository<TodoModel>
     {
         Task<IEnumerable<TodoModel>> GetAllTodos(string userId);
-        Task<TodoModel> GetTodo(string userId, Guid Id);
+        Task<TodoModel> GetTodo(Guid Id);
         
     }
 }

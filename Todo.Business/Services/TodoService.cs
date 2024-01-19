@@ -44,7 +44,7 @@ namespace Todo.Business.Services
             return true;
         }
 
-        public async Task<TodoModel> Show(string userId, Guid id) => await _todoRepository.GetTodo(userId.ToString(), id);
+        public async Task<TodoModel> Show(Guid id) => await _todoRepository.GetTodo(id);
 
         public async Task<bool> Update(Guid id, TodoModel todo)  
         {

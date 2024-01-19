@@ -5,6 +5,7 @@ using Todo.Business.Services;
 using Todo.Business.Notifications;
 using Todo.Infrastructure;
 using Todo.Infrastructure.Repository;
+using AutoMapper;
 
 
 namespace ApiRestful.Api.Configuration

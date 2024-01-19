@@ -4,6 +4,7 @@ using Todo.API.Controllers.Models;
 using Todo.Business.Interfaces;
 using Todo.Business.Interfaces.Services;
 using Todo.Business.Models;
+using AutoMapper;
 
 namespace Todo.API.Controllers;
 
@@ -13,10 +14,12 @@ namespace Todo.API.Controllers;
 public class TodoController : MainController
 {
     private readonly ITodoService _todoService;
+    private readonly IMapper _mapper;
 
-    public TodoController(ITodoService todoService, INotify notifier) : base(notifier)
+    public TodoController(ITodoService todoService, INotify notifier, IMapper mapper) : base(notifier)
     {
         _todoService = todoService;
+        _mapper = mapper;   
     }
 
     // GET: api/TodoItems
@@ -30,15 +33,11 @@ public class TodoController : MainController
     // GET: api/TodoItems/5
     // <snippet_GetByID>
     [HttpGet("{id:guid}/{userId:guid}")]
-    public async Task<ActionResult<TodoModel>> Show(Guid id, Guid userId)
+    public async Task<ActionResult<TodoModel>> Show(Guid id)
     {
-        var todo = await _todoService.Show(userId.ToString(), id);
+        var todo = await _todoService.Show(id);
 
-        if (todo == null)
-        {
-            return NotFound();
-        }
-
+        if (todo == null) return NotFound();
         return HandleResponse(todo);
     }
     // </snippet_GetByID>
@@ -49,6 +48,19 @@ public class TodoController : MainController
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> Update(Guid id, TodoViewModel todo)
     {
+
+        if(id.ToString() != todo.Id)
+            {
+            NotifyError("Incorret Id");
+            return HandleResponse(todo);
+        }
+
+        if (!ModelState.IsValid)
+        {
+            NotifyError("ModelState is invalid");
+            return HandleResponse(ModelState);
+        }
+
         var todoItem = new TodoModel
         {
             IsComplete = todo.IsCompleted,
@@ -70,24 +82,24 @@ public class TodoController : MainController
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     // <snippet_Create>
     [HttpPost]
-    public async Task<ActionResult<TodoViewModel>> Add(TodoViewModel todo)
+    public async Task<ActionResult<TodoViewModel>> Add(TodoViewModel model)
     {
         if (!ModelState.IsValid)
         {
             NotifyError("ModelState is invalid");
-            return HandleResponse();
+            return HandleResponse(ModelState);
         }
 
-        var todoItem = new TodoModel
+        var todo = new TodoModel
         {
             IsComplete = false,
-            Name = todo.Name,
-            UserId = todo.UserId
+            Name = model.Name,
+            UserId = model.UserId
         };
 
         
-        await _todoService.Add(todoItem);
-        return HandleResponse(todo);
+        await _todoService.Add(todo);
+        return HandleResponse(model);
     }
     // </snippet_Create>
 
@@ -96,9 +108,15 @@ public class TodoController : MainController
     public async Task<IActionResult> Remove(Guid id)
     {
 
+        var projectViewModel = await GetTodo(id);
+
+        if (projectViewModel == null) return NotFound();
+
         await _todoService.Remove(id);
         return HandleResponse("Task with id: " + id + " removed with success");
     }
 
+
+    private async Task<TodoViewModel> GetTodo(Guid id) => _mapper.Map<TodoViewModel>(await _todoService.Show(id));
 
 }
