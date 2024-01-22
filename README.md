@@ -7,9 +7,11 @@ This repository contains a .NET 8 API built with hexagonal architecture, utilizi
 ## Features
 
 - Hexagonal architecture for modularity and maintainability.
+- Swagger for the interface.
+- Authorization with login and register.
 - PostgreSQL for seamless data storage and retrieval.
 - Follows SOLID principles for a scalable and well-structured design.
-- ToDo functionality: create, update, and manage tasks.
+- ToDo functionality: create, read, update, delete and edit tasks.
 
 ## Getting Started
 
@@ -52,3 +54,5 @@ Update the database connection string in the appsettings.json file.
  - POST /api/todo: Create a new ToDo item
  - PUT /api/todo/{id}: Update a ToDo item
  - DELETE /api/todo/{id}: Delete a ToDo item
+
+![image](https://github.com/includeDaniel/todo-api/assets/62966657/946e0c96-c079-4d97-89d0-719de9bea540)
