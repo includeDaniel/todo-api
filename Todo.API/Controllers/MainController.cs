@@ -34,7 +34,7 @@ public class MainController : ControllerBase
 
 
         }
-        protected ActionResult FormattedResponse(ModelStateDictionary modelState)
+        protected ActionResult HandleResponse(ModelStateDictionary modelState)
         {
             if (!modelState.IsValid) NotifyInvalidModelState(modelState);
 

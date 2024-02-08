@@ -33,48 +33,27 @@ public class TodoController : MainController
     // GET: api/TodoItems/5
     // <snippet_GetByID>
     [HttpGet("{id:guid}/{userId:guid}")]
-    public async Task<ActionResult<TodoModel>> Show(Guid id)
+    public async Task<ActionResult<TodoResponseModel>> Show(Guid id)
     {
         var todo = await _todoService.Show(id);
 
         if (todo == null) return NotFound();
-        return HandleResponse(todo);
+        return HandleResponse(_mapper.Map<TodoResponseModel>(todo));
     }
-    // </snippet_GetByID>
 
-    // PUT: api/TodoItems/5
-    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-    // <snippet_Update>
-    [HttpPut("{id:guid}")]
-    public async Task<IActionResult> Update(Guid id, TodoViewModel todo)
+    [HttpPut]
+    public async Task<IActionResult> Update(UpdateTodoRequestModel todo)
     {
-
-        if(id.ToString() != todo.Id)
-            {
-            NotifyError("Incorret Id");
-            return HandleResponse(todo);
-        }
-
         if (!ModelState.IsValid)
         {
             NotifyError("ModelState is invalid");
             return HandleResponse(ModelState);
         }
 
-        var todoItem = new TodoModel
-        {
-            IsComplete = todo.IsCompleted,
-            Name = todo.Name,
-            UserId = todo.UserId
-        };
+        var todoItem = _mapper.Map<TodoModel>(todo);
 
-        todoItem.Id = new Guid(todo.Id);
-
-
-        await _todoService.Update( id, todoItem);
-
-
-        return HandleResponse();
+        await _todoService.Update(todoItem.Id, todoItem);
+        return HandleResponse(_mapper.Map<TodoResponseModel>(todo));
     }
     // </snippet_Update>
 
@@ -82,24 +61,17 @@ public class TodoController : MainController
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     // <snippet_Create>
     [HttpPost]
-    public async Task<ActionResult<TodoViewModel>> Add(TodoViewModel model)
+    public async Task<ActionResult<TodoResponseModel>> Add(AddTodoRequestModel model)
     {
         if (!ModelState.IsValid)
         {
-            NotifyError("ModelState is invalid");
             return HandleResponse(ModelState);
         }
 
-        var todo = new TodoModel
-        {
-            IsComplete = false,
-            Name = model.Name,
-            UserId = model.UserId
-        };
-
-        
+        var todo = _mapper.Map<TodoModel>(model); 
         await _todoService.Add(todo);
-        return HandleResponse(model);
+
+        return HandleResponse(_mapper.Map<TodoResponseModel>(todo));
     }
     // </snippet_Create>
 
